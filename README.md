@@ -1,10 +1,10 @@
-#COVID-19 Pandemic reader
+# COVID-19 Pandemic reader
 
 This programme gets COVID-19 pandemic data, country by country, draws trend plots, and sends OSC messages to a sound related software in a given pace.
 
 Data referred to repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
-#Running this program
+# Running this program
 
 ## First time Use
 
@@ -18,7 +18,7 @@ type <b>python get_data.py -c -m -p</b> for full programme potential! It lists a
 
 typing <b>python get_data.py</b> alone will not work. Usage wants at least one country related argument such as:
 
-<b>python get_data.py Switzerland<b>
+<b>python get_data.py Switzerland</b>
 
 For more countries simply type:
 
