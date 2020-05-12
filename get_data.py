@@ -47,6 +47,7 @@ def update_data():
     r = requests.get(url_deaths, allow_redirects=True)
     with open(path_deaths, "wb") as file:
         file.write(r.content)
+    print("Data refreshed")
 
 ### Checking Data, Country by Country
 def select_country(country):
@@ -100,6 +101,7 @@ def select_country(country):
     item_active = item_confirmed_norm - item_deaths_norm - item_healed_norm
 
     # Very simple analysis that will be printed later on
+    peak_active = np.max(item_active)
     if item_active[-1] > 0.9*peak_active:
         tendency = "Sitation is out of control"
     elif item_active[-1] > 0.5*peak_active:
@@ -147,8 +149,8 @@ def parse_args():
     args = p.parse_args()
     if args.countries:
         print("listing countries/states")
-    elif args.country is None:
-        print("type a country")
+    elif len(args.country) == 0:
+        print("Please type a country")
         p.print_usage()
         sys.exit(1)
     if args.osc:

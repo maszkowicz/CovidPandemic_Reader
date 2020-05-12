@@ -8,11 +8,21 @@ Data referred to repository for the 2019 Novel Coronavirus Visual Dashboard oper
 Running this program
 --------------------
 
+# First time Use
+
+type “python get_data.py -r” This will get the data from the web and put it in the right folder
+
+# if not first time
+
+type “python get_data.py -c -m -p” for full programme potential!
+
+# More specifically
+
 typing “python get_data.py” alone will not work. Usage wants at least one country related argument such as:
 
 “python get_data.py Switzerland”
 
-For more countries type:
+For more countries simply type:
 
 “python get_data.py Switzerland Greenland Macau Hubei ‘Hong Kong’”
 
@@ -24,4 +34,4 @@ For listing all countries type
 
 If you want to get plots, add “-p”
 
-If you want to send OSC messages at a given adress and a given pace, add “-m”
+If you want to send OSC messages at a given address and a given pace (hardcoded in software), add “-m”
