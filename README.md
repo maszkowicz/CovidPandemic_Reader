@@ -1,6 +1,6 @@
 # COVID-19 Pandemic reader
 
-This programme gets COVID-19 pandemic data, country by country, draws trend plots, and sends OSC messages to a sound related software in a given pace.
+This programme gets COVID-19 pandemic data, country by country, draws trend plots, and sends OSC messages to a sound related software at a given pace.
 
 Data referred to repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
@@ -26,9 +26,9 @@ For more countries simply type:
 
 please note that one can type all country states, but not US States which are in another data set.
 
-For listing all countries type
+## Arguments
 
-<b>python get_data.py -c</b>
+For listing all countries add <b>-c</b>
 
 If you want to get plots, add <b>-p</b>
 
