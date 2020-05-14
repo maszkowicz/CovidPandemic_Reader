@@ -35,3 +35,7 @@ If you want to get plots, add <b>-p</b>
 If you want to send OSC messages at a given address and a given pace (hardcoded in software), add <b>-m</b>
 
 For updating data, add <b>-r</b>, otherwise the programme will get it from local folder
+
+# Getting OSC message with SuperCollider
+
+Run file covid_sonification.scd in SuperCollider for getting OSC message sent from Python programme
