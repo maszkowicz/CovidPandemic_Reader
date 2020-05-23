@@ -4,9 +4,11 @@ This programme gets COVID-19 pandemic data, country by country, draws trend plot
 
 Data referred to repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
-# Running this program
+# Running this program in a terminal
 
 ## First time Use
+
+type <b>pip install -r requirements.txt<b> for dependencies
 
 type <b>python get_data.py -r</b> This will get the data from the web and put it in the right folder
 
