@@ -8,7 +8,7 @@ Data referred to repository for the 2019 Novel Coronavirus Visual Dashboard oper
 
 ## First time Use
 
-type <b>pip install -r requirements.txt<b> for dependencies
+type <b>pip install -r requirements.txt</b> for dependencies
 
 type <b>python get_data.py -r</b> This will get the data from the web and put it in the right folder
 
