@@ -13,6 +13,8 @@ import sys
 import requests
 from pythonosc.udp_client import SimpleUDPClient
 import time
+from datetime import date
+import os
 
 ### Constants and Global Variables
 # OSC communication for SuperCollider use
@@ -35,6 +37,11 @@ def update_data():
     url_confirmed = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
     url_healed = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv'
     url_deaths = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
+
+    try: 
+        os.mkdir("./Data")
+    except OSError as error: 
+        print(error) 
 
     r = requests.get(url_confirmed, allow_redirects=True)
     with open(path_confirmed, "wb") as file:
@@ -100,7 +107,7 @@ def select_country(country):
     item_healed_norm = item_healed / max_value
     item_active = item_confirmed_norm - item_deaths_norm - item_healed_norm
 
-    # Very simple analysis that will be printed later on
+    # Quick and dirty analysis that will be printed later on
     peak_active = np.max(item_active)
     if item_active[-1] > 0.9*peak_active:
         tendency = "Situation is out of control"
@@ -169,7 +176,18 @@ if __name__ == "__main__":
     # list countries to be considered
     country_list = list_countries(args)
     i = 0
-    # start recording in SuperCollider
+	#Get today's day
+    today = date.today()
+    day_of_today = today.strftime("%B %d")
+    if day_of_today[-1] == '1':
+        ending='st'
+    elif day_of_today[-1] == '2':
+        ending='nd'
+    elif day_of_today[-1] == '3':
+        ending='rd'
+    else:
+        ending='th'
+    # if needed start recording in SuperCollider
     if args.osc:
         client_osc.send_message("/pandemic/startrecord", 0)
     # Perform analysis for each country
@@ -182,19 +200,20 @@ if __name__ == "__main__":
             i+=1
         # get specific Data for each country
         item_confirmed_norm, item_healed_norm, item_deaths_norm, item_active, max_value, tendency  = select_country(country)
+        # Correct spelling of Taiwan
         if country == "Taiwan*":
             country = "Taiwan"
         print(country+" : "+max_value + " cases -> "+tendency)
         # If needed, print the curves corresponding to the given country
         if args.plot:
-            plt.figure(num=i,figsize=(1280/200,720/200), dpi=100)
+            plt.figure(num=i,figsize=(720/200,720/200), dpi=100) #figsize=(1280/200,720/200)
             plt.clf()
             plt.plot(item_confirmed_norm, 'y', label='confirmed')
             plt.plot(item_healed_norm, 'g', label='recovered')
             plt.plot(item_deaths_norm, 'r', label='deaths')
             plt.plot(item_active, 'k', label='active', linewidth=3)
             plt.title(country+"\n"+max_value + " cases")
-            plt.xlabel('from 22nd January to 15th May')
+            plt.xlabel('from January 22nd to '+day_of_today+ending+' 2020')
             plt.ylabel('relative number of cases')
             plt.legend(loc='upper left')
             plt.yticks([0,1])
@@ -202,7 +221,7 @@ if __name__ == "__main__":
             plt.pause(0.01)
         # If needed, send OSC messages related to active cases and total cases
         if args.osc:
-            client_osc.send_message("/pandemic/country", [float(item_deaths_norm.item(-1)), 5])
+            client_osc.send_message("/pandemic/country", [float(item_deaths_norm.item(-1))])
             client_osc.send_message("/pandemic/cases", float(max_value))
             # send each elements of active cases array, one by one, at a given pace
             length = len(item_active)
@@ -210,10 +229,10 @@ if __name__ == "__main__":
             for item in range(len(item_active)):
                 pan=(2*item/length)-1 #value between -1 and 1
                 client_osc.send_message("/pandemic/curve", [item_active.item(item),pan])
-                #time.sleep(1/30)
+                time.sleep(1/30)
             #time.sleep(0.01)
-    # after a full round, send 0 for cutting the sound
+    # after a full round, send 0 for cutting the sound and stop recording
     if args.osc:
-        client_osc.send_message("/pandemic/curve", 0)
+        client_osc.send_message("/pandemic/mute", 0)
         client_osc.send_message("/pandemic/stoprecord", 0)
     plt.show(block=False)

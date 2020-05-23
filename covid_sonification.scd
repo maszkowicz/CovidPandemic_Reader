@@ -15,9 +15,9 @@ thisProcess.openPorts; //check open ports
 SynthDef(
 	\covid_sound,
 	{
-		arg out=0, amp=0.0, freq=131.6, pulse=8.0;//, pan = 0;
+		arg out=0, amp=0.0, freq=131.6, pulse=8.0, pan = 0;
 		var sound = SinOsc.ar(freq: freq, phase: 0, mul: 0.4*LFPulse.kr(freq: pulse, iphase: 0.0, width: 0.1, mul: 1.0, add: 0.0).lag(0.1));
-		var pan = LFNoise1.ar(16,1).lag(0.01);
+		//var pan = LFNoise1.ar(16,1).lag(0.01);
 		var level = Clip.kr(amp,0,0.7);//amp*(0.6+LFNoise1.ar(16,0.4).lag(0.01));
 		Out.ar(out, Pan2.ar(sound, pan, level))
 	}
@@ -74,42 +74,61 @@ SynthDef(\fmbass, { arg out=0, amp=0.1, attack=0.1, sustain = 3, decay=2, gate=1
 
 //run the synth
 ~covid = Synth(\covid_sound,[\amp,0]);
+~covid.free
+
+(
+var death = 0.15;
+Synth(\sinegrain,[\out,0,\freq,(222-(death*900)),\attack,0.01,\decay,4,\amp,0.1]);
+	Synth(\sinegrain,[\out,0,\freq,(222-(death*900))+(1+death*3),\attack,1,\decay,2,\amp,0.05]);
+Synth(\fmbass,[\out,0,\freq,2*(222-(death*900)),\amp,0.1,\attack,0.03,\sustain,1,\decay,2]);
+)
+
+(
+var total = 30000000;
+~covid.set(\freq,((total.log)*200));
+~covid.set(\pulse,(total.log10+2)*2);
+)
 
 //create receivers
 (
-~cases = OSCresponderNode(nil, '/pandemic/cases',
-	{ |t, r, msg|
+~cases = OSCFunc(
+	{
+		arg msg,time,address,receivedPort;
 		var freq, pulse;
 		freq=((msg.at(1).log)*200);
 		pulse=((msg.at(1).log10+2)*2);
 		~covid.set(\freq,freq);
 		~covid.set(\pulse,pulse);
 		msg.postln
-}).add;
+	},'/pandemic/cases',nil);
 
-~curve = OSCresponderNode(nil, '/pandemic/curve',
-	{ |t, r, msg|
+~curve = OSCFunc(
+	{
+		arg msg,time,address,receivedPort;
 		var amp;
 		amp = (100000**(msg.at(1)))/1000;
 		~covid.set(\amp,amp);
 		~covid.set(\pan,msg.at(2));
 		msg.postln
-}).add;
+	},'/pandemic/curve',nil);
 
-~start = OSCresponderNode(nil, '/pandemic/startrecord',
-	{ |t, r, msg|
+~start = OSCFunc(
+	{
+		arg msg,time,address,receivedPort;
 		msg.postln;
-		s.record(path: "~/Documents/VR_Sonification/Codiv_sonification/Results/introbass_pandemic.wav".standardizePath)
-}).add;
+		s.record(path: "~/Documents/Sonification/Codiv_sonification/Results/pandemic.wav".standardizePath)
+	},'/pandemic/startrecord',nil);
 
-~stop = OSCresponderNode(nil, '/pandemic/stoprecord',
-	{ |t, r, msg|
-		s.stopRecording;
-		msg.postln
-}).add;
+~stop = OSCFunc(
+	{
+		arg msg,time,address,receivedPort;
+		msg.postln;
+		s.stopRecording
+	},'/pandemic/stoprecord',nil);
 
-~country = OSCresponderNode(nil, '/pandemic/country',
-	{ |t, r, msg|
+~country = OSCFunc(
+	{
+		arg msg,time,address,receivedPort;
 		var freq;
 		var beat;
 		freq = (222-(msg.at(1)*900));
@@ -118,13 +137,14 @@ SynthDef(\fmbass, { arg out=0, amp=0.1, attack=0.1, sustain = 3, decay=2, gate=1
 		Synth(\sinegrain,[\out,0,\freq,freq+beat,\attack,1,\decay,2,\amp,0.05]);
 		Synth(\fmbass,[\out,0,\freq,2*freq,\amp,0.1,\attack,0.03,\sustain,1,\decay,2]);
 		msg.postln
-}).add;
+	},'/pandemic/country',nil);
 )
+
 (
-~cases.remove;
-~curve.remove;
-~country.remove;
-~start.remove;
-~stop.remove;
+~cases.free;
+~curve.free;
+~country.free;
+~start.free;
+~stop.free;
 ~covid.set(\amp,0)
 )
