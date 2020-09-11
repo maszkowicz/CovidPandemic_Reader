@@ -1,7 +1,4 @@
 alabaster==0.7.12
-anaconda-client==1.7.2
-anaconda-navigator==1.9.12
-anaconda-project==0.8.3
 AnyQt==0.0.10
 applaunchservices==0.2.1
 appnope==0.1.0
