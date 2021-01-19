@@ -131,6 +131,8 @@ def list_countries(args):
             list_countries.add(str(df_confirmed.iloc[(item,1)]))
         list_countries.add('Macau')
         list_countries.add('Hong Kong')
+        list_countries.remove('MS Zaandam')
+        list_countries.remove('Diamond Princess')
         list_countries=list(list_countries)
         list_countries.append('World')
         return list_countries
@@ -206,17 +208,18 @@ if __name__ == "__main__":
         print(country+" : "+max_value + " cases -> "+tendency)
         # If needed, print the curves corresponding to the given country
         if args.plot:
-            plt.figure(num=i,figsize=(720/200,720/200), dpi=100) #figsize=(1280/200,720/200)
+            plt.figure(num=i,figsize=(1280/200,720/200), dpi=100) #figsize=(720/200,720/200)
             plt.clf()
             plt.plot(item_confirmed_norm, 'y', label='confirmed')
             plt.plot(item_healed_norm, 'g', label='recovered')
             plt.plot(item_deaths_norm, 'r', label='deaths')
             plt.plot(item_active, 'k', label='active', linewidth=3)
             plt.title(country+"\n"+max_value + " cases")
-            plt.xlabel('from January 22nd to '+day_of_today+ending+' 2020')
+            plt.xlabel('from January 22nd 2020 to '+day_of_today+ending+' 2021')
             plt.ylabel('relative number of cases')
             plt.legend(loc='upper left')
             plt.yticks([0,1])
+            #plt.yscale('log')
             plt.tight_layout()
             plt.pause(0.01)
         # If needed, send OSC messages related to active cases and total cases
@@ -229,7 +232,7 @@ if __name__ == "__main__":
             for item in range(len(item_active)):
                 pan=(2*item/length)-1 #value between -1 and 1
                 client_osc.send_message("/pandemic/curve", [item_active.item(item),pan])
-                time.sleep(1/30)
+                time.sleep(1/60)
             #time.sleep(0.01)
     # after a full round, send 0 for cutting the sound and stop recording
     if args.osc:
