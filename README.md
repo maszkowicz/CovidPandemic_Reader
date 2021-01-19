@@ -6,6 +6,12 @@ Data referred to repository for the 2019 Novel Coronavirus Visual Dashboard oper
 
 # Running this program in a terminal
 
+## venv environment
+
+type <b>python3 -m venv .venv</b> for creating a virtual environment in the given folder
+
+type <b>source .venv/bin/activate</b> for setting the venv environment
+
 ## First time Use
 
 type <b>pip install -r requirements.txt</b> for dependencies
